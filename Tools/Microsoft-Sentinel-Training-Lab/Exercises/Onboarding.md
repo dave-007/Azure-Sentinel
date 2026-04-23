@@ -35,35 +35,44 @@ If you already have a workspace, skip to [Step 2](#step-2-add-microsoft-sentinel
    az login
    ```
 
-2. Set your subscription (optional if you only have one):
+2. Set variables (reused in subsequent steps):
 
    ```bash
-   az account set --subscription "<subscriptionIdOrName>"
+   SUBSCRIPTION_ID="<subscriptionIdOrName>"   # or your subscription name
+   RESOURCE_GROUP="<resourceGroupName>"
+   WORKSPACE_NAME="<workspaceName>"
+   LOCATION="<region>"                       # example: eastus
    ```
 
-3. Create (or reuse) a resource group:
+3. Set your subscription (optional if you only have one):
+
+   ```bash
+   az account set --subscription "$SUBSCRIPTION_ID"
+   ```
+
+4. Create (or reuse) a resource group:
 
    ```bash
    az group create \
-     --name "<resourceGroupName>" \
-     --location "<region>"
+     --name "$RESOURCE_GROUP" \
+     --location "$LOCATION"
    ```
 
-4. Create the Log Analytics workspace:
+5. Create the Log Analytics workspace:
 
    ```bash
    az monitor log-analytics workspace create \
-     --resource-group "<resourceGroupName>" \
-     --workspace-name "<workspaceName>" \
-     --location "<region>"
+     --resource-group "$RESOURCE_GROUP" \
+     --workspace-name "$WORKSPACE_NAME" \
+     --location "$LOCATION"
    ```
 
-5. (Optional) Capture the workspace resource ID for later steps:
+6. (Optional) Capture the workspace resource ID for later steps:
 
    ```bash
    az monitor log-analytics workspace show \
-     --resource-group "<resourceGroupName>" \
-     --workspace-name "<workspaceName>" \
+     --resource-group "$RESOURCE_GROUP" \
+     --workspace-name "$WORKSPACE_NAME" \
      --query id -o tsv
    ```
 <!-- tabs:end -->
@@ -87,9 +96,11 @@ If you already have a workspace, skip to [Step 2](#step-2-add-microsoft-sentinel
 
 > Microsoft Sentinel is enabled on a Log Analytics workspace by creating a Sentinel **onboarding state**.
 
-1. Set variables:
+1. Ensure variables are set (from Step 1):
 
    ```bash
+   # Reuse the variables you set in Step 1.
+   # If you're starting here, set them now:
    SUBSCRIPTION_ID="<subscriptionId>"
    RESOURCE_GROUP="<resourceGroupName>"
    WORKSPACE_NAME="<workspaceName>"
@@ -140,7 +151,7 @@ This deploys pre-recorded telemetry (~20 MB) and creates analytics rules, workbo
 
 Make sure you have completed the **Custom Detection Rules Setup** from the [README](../README.md) (creating the User-Assigned Managed Identity). You will need the UAMI resource ID during deployment.
 
-[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FAzure-Sentinel%2Fmaster%2FTools%2FMicrosoft-Sentinel-Training-Lab%2FContent%2FDeployment%2Fsentineltraininglab.json)
+[![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure%2FAzure-Sentinel%2Fmaster%2FTools%2FMic[...])
 
 1. Select the **Subscription**, **Resource Group**, and **Workspace** from the previous steps.
 2. Under **Detection Rules Identity Resource Id**, paste the full resource ID of your UAMI (or leave empty to skip detection rules deployment).
@@ -150,7 +161,7 @@ Make sure you have completed the **Custom Detection Rules Setup** from the [READ
 
 4. Once complete, go back to Microsoft Sentinel — you should see ingested data and recent incidents on the home page.
 
-> **⚠️ Playbook Permissions:** The deployment creates a Logic App with a **System-Assigned Managed Identity**. Grant this identity the **Microsoft Sentinel Contributor** role on the resource group.
+> **⚠️ Playbook Permissions:** The deployment creates a Logic App with a **System-Assigned Managed Identity**. Grant this identity the **Microsoft Sentinel Contributor** role on the resource group[...]
 > 1. **Resource Group** → **Access control (IAM)** → **Add role assignment**.
 > 2. Select **Microsoft Sentinel Contributor**, assign to **Managed identity**, select the Logic App's identity, and **Save**.
 
